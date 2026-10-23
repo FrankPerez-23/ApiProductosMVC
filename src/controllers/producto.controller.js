@@ -36,3 +36,56 @@ const obtener = async (req, res) => {
         res.status(500).json({mensaje: 'Error al obtener el producto'});
     }
 };
+
+//POST /api/productos
+const crear = async (req, res) => {
+    try{
+        const datos = req.body ?? {};
+        const errorValidacion = validarProducto(datos);
+        if (errorValidacion){
+            return res.status(400).json({ mensaje: errorValidacion});
+        }
+        const nuevo = await Producto.crear(datos);
+        res.status(201).json(nuevo);
+    }catch (error){
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al crear el producto'});
+    }
+};
+
+//PUT /api/productos/:id
+const actualizar =async (req, res) => {
+    try{
+        const {id} = req.params;
+        const datos = req.body ?? {};
+        const errorValidacion = validarProducto(datos);
+        if (errorValidacion){
+            return res.status(400).json({ mensaje: errorValidacion});
+        }
+        const filasAfectadas = await Producto.actualizar(id, datos);
+        if (filasAfectadas === 0){
+            return res.status(404).json({mensaje: 'Producto no encontrado'})
+        }
+        const actualizado = await Producto.obtenerPorId(id);
+        res.status(200).json(actualizado);
+    }catch (error){
+        console.error(error);
+        res.status(500).json({mensaje: 'Error al actualizar el producto'});
+    }
+};
+
+//DELETE /api/productos/:id
+const eliminar = async (req, res) => {
+    try {
+        const filasAfectadas = await Producto.eliminar(req.params.id);
+        if (filasAfectadas === 0){
+            return res.status(404).json({mensaje: 'Producto no encontrado'});
+        }
+        res.status(200).json({mensaje: 'Producto eliminado correctamente'});
+    } catch (error){
+        console.error(error);
+        res.status(500).json({mensaje: 'Error al eliminar el producto'});
+    }
+};
+
+module.exports = {listar, obtener, crear, actualizar, eliminar}
