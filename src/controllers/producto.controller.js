@@ -16,7 +16,7 @@ const validarProducto = ({ nombre, precio, stock}) => {
 const listar = async (req, res) => {
     try{
         const producto = await Producto.obtenerTodos();
-        res.status(200).json(productos);
+        res.status(200).json(producto);
     }catch(error){
         console.error(error);
         res.status(500).json({mensaje: 'Error al obtener los productos'});
